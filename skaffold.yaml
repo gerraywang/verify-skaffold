@@ -4,7 +4,7 @@ metadata:
   name: $_SERVICE_NAME
 build:
   artifacts:
-  - image: $_SERVICE_NAME
+  - image: vertifyskaffold
 deploy:
   kubectl:
     manifests:
