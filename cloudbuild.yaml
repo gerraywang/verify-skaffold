@@ -1,10 +1,35 @@
 steps:
 - name: 'gcr.io/k8s-skaffold/skaffold'
   args:
-    - deploy
+    - skaffold
+    - build
+    - '--interactive=false'
+    - '--profile=gcb'
     - '--default-repo=$_AR_HOSTNAME/$PROJECT_ID/$_PKG_NAME/$REPO_NAME/$_SERVICE_NAME'
     - '--file-output=/workspace/artifacts.json'
-  id: Skaffold-Deploy
+  id: Skaffold-Build
+
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - 'cat /workspace/artifacts.json'
+  id: Check-Artifacts
+
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: gcloud
+  args:
+    [
+      "deploy", "releases", "create", "rel-${SHORT_SHA}",
+      "--delivery-pipeline", "$_SERVICE_NAME",
+      "--region", "$_REGION",
+      "--annotations", "commitId=${REVISION_ID}",
+      "--build-artifacts", "/workspace/artifacts.json"
+    ]
+  id: Create-Release
+
+images:
+- '$_AR_HOSTNAME/$PROJECT_ID/$_PKG_NAME/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
 
 options:
   substitutionOption: ALLOW_LOOSE
