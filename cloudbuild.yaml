@@ -17,7 +17,7 @@ steps:
     id: Check-Artifacts
     waitFor: ['Skaffold-Build']
 
-    - name: 'gcr.io/cloud-builders/gcloud'
+  - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
       - '-c'
