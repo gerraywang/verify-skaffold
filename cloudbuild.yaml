@@ -6,8 +6,6 @@ steps:
       - '-c'
       - |-
         set -x
-        curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-        gcloud auth configure-docker asia-northeast1-docker.pkg.dev
         skaffold build --interactive=false --default-repo=$_AR_HOSTNAME/$PROJECT_ID/$_PKG_NAME/$REPO_NAME/$_SERVICE_NAME --file-output artifacts.json  --verbosity=debug
 
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
