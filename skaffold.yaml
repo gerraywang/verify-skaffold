@@ -1,4 +1,4 @@
-apiVersion: skaffold/v4beta10
+apiVersion: skaffold/v2beta10
 kind: Config
 metadata:
   name: $_SERVICE_NAME
