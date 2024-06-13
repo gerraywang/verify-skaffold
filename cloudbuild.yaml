@@ -5,8 +5,6 @@ steps:
     - '--default-repo=$_AR_HOSTNAME/$PROJECT_ID/$_PKG_NAME/$REPO_NAME/$_SERVICE_NAME'
     - '--file-output=/workspace/artifacts.json'
   id: Skaffold-Deploy
-  waitFor: ['skaffold']
-
 
 options:
   substitutionOption: ALLOW_LOOSE
