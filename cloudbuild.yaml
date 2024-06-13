@@ -21,7 +21,9 @@ steps:
     entrypoint: bash
     args:
       - '-c'
-      - 'cat /workspace/artifacts.json | jq -r ".buildArtifacts[0].image" > /workspace/image.txt'
+      - |
+        apt-get update && apt-get install -y jq
+        cat /workspace/artifacts.json | jq -r ".buildArtifacts[0].image" > /workspace/image.txt
     id: Extract-Image
     waitFor: ['Skaffold-Build']
 
