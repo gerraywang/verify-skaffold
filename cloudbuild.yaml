@@ -10,9 +10,18 @@ steps:
         gcloud auth configure-docker asia-northeast1-docker.pkg.dev
         skaffold build --interactive=false --default-repo=$_AR_HOSTNAME/$PROJECT_ID/$_PKG_NAME/$REPO_NAME/$_SERVICE_NAME --file-output artifacts.json
 
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: bash
+    args:
+      - '-c'
+      - 'cat /workspace/artifacts.json'
+    id: Check-Artifacts
+    waitFor: ['build-image']
+
   - name: 'gcr.io/cloud-builders/gcloud'
     id: trigger-deploy
     args: [ "deploy", "releases",  "create",  "release-$SHORT_SHA", "--delivery-pipeline",  "$_SERVICE_NAME", "--region", "asia-northeast1", "--build-artifacts", "artifacts.json" ]
+    waitFor: ['Check-Artifacts']
 
 options:
   substitutionOption: ALLOW_LOOSE
