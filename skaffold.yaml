@@ -6,5 +6,5 @@ build:
 deploy:
   helm:
     releases:
-      - name: example
+      - name: dev
         chartPath: deployments/helm/example
