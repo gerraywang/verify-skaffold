@@ -15,7 +15,7 @@ profiles:
       artifacts:
       - image: example-dev
     deploy:
-      helm:
-        releases:
-          - name: dev
-            chartPath: deployments/helm
+      kubectl:
+        manifests:
+          - k8s-deployment.yaml
+          - k8s-service.yaml
