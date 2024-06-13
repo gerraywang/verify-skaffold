@@ -16,7 +16,20 @@ steps:
       - >-
         $_AR_HOSTNAME/$PROJECT_ID/$_PKG_NAME/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA
     id: Push
-    
+- name: 'gcr.io/cloud-builders/skaffold'
+  args: ['run', '-p', 'gcb']
+- name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      gcloud deploy releases create rel-${SHORT_SHA} \
+      --delivery-pipeline=$_SERVICE_NAME \
+      --region=$_REGION \
+      --images=$_AR_HOSTNAME/$PROJECT_ID/$_PKG_NAME/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA
+images:
+- $_AR_HOSTNAME/$PROJECT_ID/$_PKG_NAME/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA
+
 options:
   substitutionOption: ALLOW_LOOSE
   logging: CLOUD_LOGGING_ONLY

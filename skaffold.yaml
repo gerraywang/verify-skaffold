@@ -1,0 +1,16 @@
+apiVersion: skaffold/v2beta10
+kind: Config
+metadata:
+  name: $_SERVICE_NAME
+build:
+  artifacts:
+  - image: $_AR_HOSTNAME/$PROJECT_ID/$_PKG_NAME/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA
+deploy:
+  kubectl:
+    manifests:
+      - k8s-deployment.yaml
+      - k8s-service.yaml
+profiles:
+  - name: gcb
+    build:
+      googleCloudBuild: {}
