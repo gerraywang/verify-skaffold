@@ -4,7 +4,7 @@ metadata:
   name: $_SERVICE_NAME
 build:
   artifacts:
-  - image: $_AR_HOSTNAME/$PROJECT_ID/$_PKG_NAME/$REPO_NAME/$_SERVICE_NAME
+  - image: $_AR_HOSTNAME/$PROJECT_ID/$_PKG_NAME/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA
     context: .
     docker:
       dockerfile: Dockerfile
