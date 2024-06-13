@@ -1,36 +1,15 @@
-steps:
-- name: 'gcr.io/k8s-skaffold/skaffold'
-  args:
-    - skaffold
-    - build
-    - '--interactive=false'
-    - '--profile=gcb'
-    - '--default-repo=$_AR_HOSTNAME/$PROJECT_ID/$_PKG_NAME/$REPO_NAME/$_SERVICE_NAME'
-    - '--file-output=/workspace/artifacts.json'
-  id: Skaffold-Build
+steps:  
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: build-image
+    entrypoint: "/bin/bash"
+    args:
+      - '-c'
+      - |-
+        set -x
+        curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+        gcloud auth configure-docker asia-northeast1-docker.pkg.dev
+        skaffold build --interactive=false --default-repo=$_AR_HOSTNAME/$PROJECT_ID/$_PKG_NAME/$REPO_NAME/$_SERVICE_NAME --file-output artifacts.json
 
-- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-  entrypoint: 'bash'
-  args:
-    - '-c'
-    - 'cat /workspace/artifacts.json'
-  id: Check-Artifacts
-
-- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-  entrypoint: gcloud
-  args:
-    [
-      "deploy", "releases", "create", "rel-${SHORT_SHA}",
-      "--delivery-pipeline", "$_SERVICE_NAME",
-      "--region", "$_REGION",
-      "--annotations", "commitId=${REVISION_ID}",
-      "--build-artifacts", "/workspace/artifacts.json"
-    ]
-  id: Create-Release
-
-images:
-- '$_AR_HOSTNAME/$PROJECT_ID/$_PKG_NAME/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
-
-options:
-  substitutionOption: ALLOW_LOOSE
-  logging: CLOUD_LOGGING_ONLY
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: trigger-deploy
+    args: [ "deploy", "releases",  "create",  "release-$SHORT_SHA", "--delivery-pipeline",  "$_SERVICE_NAME", "--region", "asia-northeast1", "--build-artifacts", "artifacts.json" ]

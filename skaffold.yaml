@@ -1,21 +1,10 @@
-apiVersion: skaffold/v2beta1
+apiVersion: skaffold/v2beta29
 kind: Config
-metadata:
-  name: $_SERVICE_NAME
 build:
   artifacts:
-  - image: vertifyskaffold
+  - image: example
 deploy:
-  kubectl:
-    manifests:
-      - k8s-deployment.yaml
-      - k8s-service.yaml
-profiles:
-  - name: gcb
-    build:
-      googleCloudBuild: {}
-    deploy:
-      kubectl:
-        manifests:
-          - k8s-deployment.yaml
-          - k8s-service.yaml
+  helm:
+    releases:
+      - name: example
+        chartPath: deployments/helm/example
