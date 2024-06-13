@@ -18,9 +18,17 @@ steps:
 
 - name: 'gcr.io/k8s-skaffold/skaffold'
   args:
-    - run
-    - '-p'
-    - gcb
+    - build
+    - '--interactive=false'
+    - '--file-output=/workspace/artifacts.json'
+  id: Skaffold-Build
+
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - 'cat /workspace/artifacts.json'
+  id: Check-Artifacts
 
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: gcloud
@@ -29,9 +37,10 @@ steps:
       "deploy", "releases", "create", "rel-${SHORT_SHA}",
       "--delivery-pipeline", "$_SERVICE_NAME",
       "--region", "$_REGION",
-      "--images", "$_AR_HOSTNAME/$PROJECT_ID/$_PKG_NAME/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA",
-      "--annotations", "commitId=${REVISION_ID}"
+      "--annotations", "commitId=${REVISION_ID}",
+      "--build-artifacts", "/workspace/artifacts.json"
     ]
+  id: Create-Release
 
 images:
 - '$_AR_HOSTNAME/$PROJECT_ID/$_PKG_NAME/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
