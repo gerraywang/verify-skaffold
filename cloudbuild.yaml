@@ -15,7 +15,7 @@ steps:
       - '-c'
       - 'cat /workspace/artifacts.json'
     id: Check-Artifacts
-    waitFor: ['build-image']
+    waitFor: ['Skaffold-Build']
 
   - name: 'gcr.io/cloud-builders/gcloud'
     id: trigger-deploy
