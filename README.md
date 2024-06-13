@@ -7,3 +7,7 @@
 1. GKE
 2. Cloud Deployを作成して、GKEと紐づけ
 3. Cloud Buildを作成し、cloudbuild.yamlと紐づけ
+
+
+※参照
+[Google Cloud DeployとCI/CDパイプラインの構築](https://cloudandbuild.jp/blog/article-20230122)
