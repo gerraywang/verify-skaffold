@@ -17,14 +17,23 @@ steps:
     id: Check-Artifacts
     waitFor: ['Skaffold-Build']
 
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: bash
+    args:
+      - '-c'
+      - 'cat /workspace/artifacts.json | jq -r ".buildArtifacts[0].image" > /workspace/image.txt'
+    id: Extract-Image
+    waitFor: ['Skaffold-Build']
+
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        sed -i "s|image: nginx|image: $_AR_HOSTNAME/$PROJECT_ID/$_PKG_NAME/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA|g" k8s-deployment.yaml
+        IMAGE=$(cat /workspace/image.txt)
+        sed -i "s|image: nginx|image: $IMAGE|g" k8s-deployment.yaml
     id: Replace-Image
-    waitFor: ['Check-Artifacts']
+    waitFor: ['Extract-Image']
 
   - name: 'gcr.io/cloud-builders/gcloud'
     id: trigger-deploy
