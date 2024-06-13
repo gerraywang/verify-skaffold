@@ -30,8 +30,7 @@ steps:
     args:
       - '-c'
       - |
-        IMAGE=$(cat /workspace/image.txt)
-        sed -i "s|image: nginx|image: $IMAGE|g" k8s-deployment.yaml
+        sed -i "s|image: nginx|image: $(cat /workspace/image.txt)|g" k8s-deployment.yaml
     id: Replace-Image
     waitFor: ['Extract-Image']
 
