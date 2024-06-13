@@ -17,10 +17,19 @@ steps:
     id: Check-Artifacts
     waitFor: ['Skaffold-Build']
 
+    - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        sed -i "s|image: nginx|image: $_AR_HOSTNAME/$PROJECT_ID/$_PKG_NAME/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA|g" k8s-deployment.yaml
+    id: Replace-Image
+    waitFor: ['Check-Artifacts']
+
   - name: 'gcr.io/cloud-builders/gcloud'
     id: trigger-deploy
     args: [ "deploy", "releases",  "create",  "release-$SHORT_SHA", "--delivery-pipeline",  "$_SERVICE_NAME", "--region", "asia-northeast1", "--build-artifacts", "artifacts.json" ]
-    waitFor: ['Check-Artifacts']
+    waitFor: ['Replace-Image']
 
 options:
   substitutionOption: ALLOW_LOOSE
