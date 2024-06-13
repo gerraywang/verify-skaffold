@@ -13,3 +13,7 @@ steps:
   - name: 'gcr.io/cloud-builders/gcloud'
     id: trigger-deploy
     args: [ "deploy", "releases",  "create",  "release-$SHORT_SHA", "--delivery-pipeline",  "$_SERVICE_NAME", "--region", "asia-northeast1", "--build-artifacts", "artifacts.json" ]
+
+options:
+  substitutionOption: ALLOW_LOOSE
+  logging: CLOUD_LOGGING_ONLY
