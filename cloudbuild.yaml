@@ -1,51 +1,12 @@
 steps:
-- name: 'gcr.io/cloud-builders/docker'
-  args:
-    - build
-    - '--no-cache'
-    - '-t'
-    - '$_AR_HOSTNAME/$PROJECT_ID/$_PKG_NAME/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
-    - '.'
-    - '-f'
-    - 'Dockerfile'
-  id: Build
-
-- name: 'gcr.io/cloud-builders/docker'
-  args:
-    - push
-    - '$_AR_HOSTNAME/$PROJECT_ID/$_PKG_NAME/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
-  id: Push
-
 - name: 'gcr.io/k8s-skaffold/skaffold'
   args:
-    - skaffold
-    - build
-    - '--interactive=false'
+    - deploy
     - '--default-repo=$_AR_HOSTNAME/$PROJECT_ID/$_PKG_NAME/$REPO_NAME/$_SERVICE_NAME'
     - '--file-output=/workspace/artifacts.json'
-  id: Skaffold-Build
+  id: Skaffold-Deploy
+  waitFor: ['skaffold']
 
-- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-  entrypoint: 'bash'
-  args:
-    - '-c'
-    - 'cat /workspace/artifacts.json'
-  id: Check-Artifacts
-
-- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-  entrypoint: gcloud
-  args:
-    [
-      "deploy", "releases", "create", "rel-${SHORT_SHA}",
-      "--delivery-pipeline", "$_SERVICE_NAME",
-      "--region", "$_REGION",
-      "--annotations", "commitId=${REVISION_ID}",
-      "--build-artifacts", "/workspace/artifacts.json"
-    ]
-  id: Create-Release
-
-images:
-- '$_AR_HOSTNAME/$PROJECT_ID/$_PKG_NAME/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA'
 
 options:
   substitutionOption: ALLOW_LOOSE
