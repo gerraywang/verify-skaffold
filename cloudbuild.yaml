@@ -18,6 +18,7 @@ steps:
 
 - name: 'gcr.io/k8s-skaffold/skaffold'
   args:
+    - skaffold
     - build
     - '--interactive=false'
     - '--file-output=/workspace/artifacts.json'
