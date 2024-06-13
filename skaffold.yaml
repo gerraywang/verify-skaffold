@@ -1,11 +1,19 @@
 apiVersion: skaffold/v2beta29
 kind: Config
+build:
+  artifacts:
+  - image: dev
+deploy:
+  kubectl:
+    manifests:
+      - k8s-deployment.yaml
+      - k8s-service.yaml
 
 profiles:
   - name: dev
     build:
       artifacts:
-      - image: dev
+      - image: example-dev
     deploy:
       kubectl:
         manifests:
