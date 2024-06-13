@@ -1,19 +1,11 @@
 apiVersion: skaffold/v2beta29
 kind: Config
-build:
-  artifacts:
-  - image: example
-deploy:
-  helm:
-    releases:
-      - name: dev
-        chartPath: deployments/helm
 
 profiles:
   - name: dev
     build:
       artifacts:
-      - image: example-dev
+      - image: dev
     deploy:
       kubectl:
         manifests:
